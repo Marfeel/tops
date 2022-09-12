@@ -18,6 +18,7 @@ printf "Value of '%s': %s\\n" 'Workspace path' "$_arg_workspace_path"
 CONTAINER_UUID=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 8 | head -n 1)
 USER_ID=$(id -u)
 
+test -f $_arg_env_file || touch $_arg_env_file && \
 { docker build -t tops --build-arg USER_ID=${USER_ID} -f - . <<-\EOF
   FROM ubuntu:20.04
 
@@ -131,6 +132,8 @@ USER_ID=$(id -u)
 
   RUN mkdir -p /home/tops/.ssh && \
       echo 'PubkeyAcceptedKeyTypes +ssh-dss-cert-v01@openssh.com' >> /home/tops/.ssh/config
+
+  RUN pip3 install dnspython
 
   RUN chown -R tops:tops /home/tops
 
